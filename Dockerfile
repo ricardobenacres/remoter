@@ -10,7 +10,8 @@ RUN apt-get update && apt-get install -y \
     pkg-config \
     curl \
     && rm -rf /var/lib/apt/lists/* \
-    && R -e "install.packages(c('plumber','dotenv','logger','jsonlite'), repos='https://cloud.r-project.org')"
+    && R -e "install.packages(c('plumber','dotenv','logger','jsonlite','sf','dplyr','xgboost','PCAmixdata'), repos='https://cloud.r-project.org')"
+
 
 # Create non-root user with specific UID/GID
 RUN groupadd -g 1000 appgroup && \
@@ -21,6 +22,9 @@ WORKDIR /app
 
 # Copy application files
 COPY --chown=appuser:appgroup R/ /app/R/
+
+# Copia los archivos del modelo (shapefiles y objetos RDS) a la carpeta de trabajo dentro del contenedor
+COPY --chown=appuser:appgroup data/ /app/data/
 
 # Set permissions
 RUN chown -R appuser:appgroup /app && \
